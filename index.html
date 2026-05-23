@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jasa Cek Plagiasi - Deny</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .header h2 {
+            color: #2563eb;
+            font-size: 22px;
+        }
+
+        .header .wa-seller {
+            display: inline-block;
+            background: #25d366;
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            text-decoration: none;
+            margin-top: 8px;
+        }
+
+        /* Step Indicator */
+        .steps {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0;
+            margin-bottom: 24px;
+        }
+
+        .step-circle {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+            color: #9ca3af;
+            transition: 0.3s;
+        }
+
+        .step-circle.active {
+            background: #2563eb;
+            color: white;
+        }
+
+        .step-circle.done {
+            background: #16a34a;
+            color: white;
+        }
+
+        .step-line {
+            width: 50px;
+            height: 3px;
+            background: #e5e7eb;
+            transition: 0.3s;
+        }
+
+        .step-line.done {
+            background: #16a34a;
+        }
+
+        /* Form Step */
+        .form-step {
+            display: none;
+        }
+
+        .form-step.active {
+            display: block;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-top: 14px;
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="tel"],
+        input[type="email"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 15px;
+            font-family: inherit;
+            transition: 0.2s;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        /* Upload Box */
+        .upload-area {
+            border: 2px dashed #d1d5db;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+            background: #fafafa;
+        }
+
+        .upload-area:hover {
+            border-color: #2563eb;
+            background: #eff6ff;
+        }
+
+        .upload-area .icon {
+            font-size: 36px;
+            margin-bottom: 6px;
+        }
+
+        .upload-area .label-text {
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        .upload-area .file-selected {
+            font-size: 13px;
+            color: #2563eb;
+            margin-top: 6px;
+            font-weight: 500;
+        }
+
+        .upload-area input {
+            display: none;
+        }
+
+        /* QRIS Box */
+        .qris-box {
+            background: #f0f4ff;
+            border: 2px solid #2563eb;
+            border-radius: 14px;
+            padding: 20px;
+            text-align: center;
+            margin: 12px 0;
+        }
+
+        .qris-box img {
+            max-width: 180px;
+            border-radius: 8px;
+            background: white;
+            padding: 8px;
+        }
+
+        .qris-box .amount {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2563eb;
+            margin: 8px 0;
+        }
+
+        .qris-box .info {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        /* Checkbox */
+        .checkbox-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin: 12px 0;
+            padding: 12px;
+            background: #f9fafb;
+            border-radius: 10px;
+        }
+
+        .checkbox-row input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin-top: 2px;
+            accent-color: #2563eb;
+        }
+
+        .checkbox-row span {
+            font-size: 13px;
+        }
+
+        /* Buttons */
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: 0.2s;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn-primary:disabled {
+            background: #93c5fd;
+            cursor: not-allowed;
+        }
+
+        .btn-outline {
+            background: white;
+            color: #2563eb;
+            border: 2px solid #2563eb;
+        }
+
+        .btn-wa {
+            background: #25d366;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-row .btn {
+            flex: 1;
+        }
+
+        /* Error */
+        .error {
+            color: #dc2626;
+            font-size: 12px;
+            margin-top: 4px;
+            display: none;
+        }
+
+        /* Success */
+        .success-box {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .success-box .icon {
+            font-size: 60px;
+            margin-bottom: 12px;
+        }
+
+        .success-box h3 {
+            color: #16a34a;
+            margin-bottom: 8px;
+        }
+
+        /* Loading */
+        .loading {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .loading-box {
+            background: white;
+            padding: 24px;
+            border-radius: 14px;
+            text-align: center;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e5e7eb;
+            border-top-color: #2563eb;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 12px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Loading Overlay -->
+    <div class="loading" id="loading">
+        <div class="loading-box">
+            <div class="spinner"></div>
+            <p>Mengirim pesanan...</p>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container" id="mainContainer">
+        <!-- Header -->
+        <div class="header">
+            <h2>📌 Jasa Cek Plagiasi</h2>
+            <p style="font-size:14px;color:#6b7280;">Milik Deny</p>
+            <a href="https://wa.me/6281260776598" target="_blank" class="wa-seller">
+                💬 Admin: +6281260776598
+            </a>
+        </div>
+
+        <!-- Step Indicator -->
+        <div class="steps">
+            <div class="step-circle active" id="circle1">1</div>
+            <div class="step-line" id="line1"></div>
+            <div class="step-circle" id="circle2">2</div>
+            <div class="step-line" id="line2"></div>
+            <div class="step-circle" id="circle3">3</div>
+        </div>
+
+        <!-- Form -->
+        <form id="formOrder">
+            <!-- STEP 1 -->
+            <div class="form-step active" id="step1">
+                <h3 style="margin-bottom:8px;">Langkah 1: Data & File</h3>
+                <p style="font-size:13px;color:#6b7280;margin-bottom:8px;">Isi data diri dan upload file yang ingin dicek plagiasi</p>
+
+                <label>Nama Kamu *</label>
+                <input type="text" id="namaCust" placeholder="Nama lengkap" required>
+
+                <label>Nomor WhatsApp Kamu *</label>
+                <input type="tel" id="waCust" placeholder="62812xxxxxxxx" required>
+
+                <label>Jenis Layanan *</label>
+                <select id="jasa" required>
+                    <option value="">-- Pilih Layanan --</option>
+                    <option value="Cek Plagiasi Dokumen">Cek Plagiasi Dokumen</option>
+                    <option value="Cek Plagiasi Skripsi">Cek Plagiasi Skripsi</option>
+                    <option value="Cek Plagiasi Jurnal">Cek Plagiasi Jurnal</option>
+                    <option value="Cek Plagiasi Artikel">Cek Plagiasi Artikel</option>
+                    <option value="Lainnya">Lainnya</option>
+                </select>
+
+                <label>Catatan (opsional)</label>
+                <textarea id="catatan" placeholder="Tulis catatan tambahan jika ada..."></textarea>
+
+                <label>Upload File yang Ingin Dicek (PDF/Word) *</label>
+                <div class="upload-area" id="uploadBox1">
+                    <div class="icon">📄</div>
+                    <div class="label-text">Klik untuk pilih file (PDF/DOC/DOCX)</div>
+                    <div class="file-selected" id="fileName1"></div>
+                    <input type="file" id="fileKerja" accept=".pdf,.doc,.docx,.zip,.rar">
+                </div>
+                <div class="error" id="errFile1">⚠️ File wajib diupload!</div>
+
+                <button type="button" class="btn btn-primary" onclick="goStep(2)">Lanjut ke Pembayaran ➡️</button>
+            </div>
+
+            <!-- STEP 2 -->
+            <div class="form-step" id="step2">
+                <h3 style="margin-bottom:8px;">Langkah 2: Pembayaran QRIS</h3>
+                <p style="font-size:13px;color:#6b7280;margin-bottom:8px;">Scan QRIS dan upload bukti pembayaran</p>
+
+                <div class="qris-box">
+                    <img src="qris-anda.jpg" alt="QRIS Jasa Cek Plagiasi">
+                    <div class="amount">Rp 50.000</div>
+                    <div class="info">
+                        Scan pakai GoPay / OVO / Dana / LinkAja / M-Banking<br>
+                        QRIS GoPay Merchant <strong>Jasa Cek Plagiasi - Deny</strong>
+                    </div>
+                </div>
+
+                <label>Upload Bukti Pembayaran (Screenshot) *</label>
+                <div class="upload-area" id="uploadBox2">
+                    <div class="icon">📸</div>
+                    <div class="label-text">Klik untuk upload screenshot bukti bayar</div>
+                    <div class="file-selected" id="fileName2"></div>
+                    <input type="file" id="buktiBayar" accept="image/*">
+                </div>
+                <div class="error" id="errFile2">⚠️ Bukti bayar wajib diupload!</div>
+
+                <div class="checkbox-row">
+                    <input type="checkbox" id="checkBayar">
+                    <span>Saya sudah membayar sesuai nominal di atas dan mengunggah bukti pembayaran yang valid *</span>
+                </div>
+                <div class="error" id="errCheck">⚠️ Centang konfirmasi pembayaran!</div>
+
+                <div class="btn-row">
+                    <button type="button" class="btn btn-outline" onclick="goStep(1)">⬅️ Kembali</button>
+                    <button type="button" class="btn btn-primary" onclick="goStep(3)">Lanjutkan ➡️</button>
+                </div>
+            </div>
+
+            <!-- STEP 3 -->
+            <div class="form-step" id="step3">
+                <h3 style="margin-bottom:8px;">Langkah 3: Kirim Pesanan</h3>
+                <p style="font-size:13px;color:#6b7280;margin-bottom:8px;">Periksa kembali semua data sebelum kirim</p>
+
+                <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:14px;font-size:13px;">
+                    ✅ File pekerjaan sudah diupload<br>
+                    ✅ Pembayaran QRIS sudah dilakukan<br>
+                    ✅ Bukti pembayaran sudah diupload
+                </div>
+
+                <div style="background:#fef3c7;border:1px solid #fde68a;border-radius:10px;padding:12px;margin-top:10px;font-size:12px;color:#92400e;">
+                    ⚠️ <strong>Perhatian:</strong> Pastikan semua data sudah benar. Hasil cek plagiasi akan dikirim via WhatsApp dalam 1x24 jam.
+                </div>
+
+                <div class="checkbox-row">
+                    <input type="checkbox" id="checkFinal">
+                    <span>Saya yakin semua data yang diisi sudah benar dan lengkap. Saya setuju untuk menunggu proses 1x24 jam *</span>
+                </div>
+                <div class="error" id="errFinal">⚠️ Centang konfirmasi data!</div>
+
+                <button type="submit" class="btn btn-primary" id="btnSubmit" disabled>📤 Kirim Pesanan</button>
+
+                <button type="button" class="btn btn-wa" onclick="keWA()">💬 Konfirmasi via WhatsApp</button>
+
+                <button type="button" class="btn btn-outline" onclick="goStep(2)">⬅️ Kembali</button>
+            </div>
+        </form>
+
+        <!-- Success Box -->
+        <div class="success-box" id="successBox">
+            <div class="icon">✅</div>
+            <h3>Pesanan Berhasil Dikirim!</h3>
+            <p>File dan data kamu sudah tersimpan. Deny akan segera memproses cek plagiasi dan mengirim hasilnya via WhatsApp dalam 1x24 jam.</p>
+            <button class="btn btn-wa" onclick="keWA()" style="margin-top:12px;">💬 Chat Admin Sekarang</button>
+            <button class="btn btn-outline" onclick="resetAll()" style="margin-top:8px;">🔄 Pesan Lagi</button>
+        </div>
+    </div>
+
+    <script>
+        // ============ KONFIGURASI ============
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyYN92C7NWmEPGM9PG1riVaJH4oH-gAbo80gi5RP0WkYSG1bPlfMc338Ajm4o85Cbge8Q/exec';
+        const WA_ADMIN = '6281260776598';
+        const NAMA_USAHA = 'Jasa Cek Plagiasi - Deny';
+        // ===================================
+
+        let currentStep = 1;
+
+        // Klik upload box untuk trigger input file
+        document.getElementById('uploadBox1').onclick = function() {
+            document.getElementById('fileKerja').click();
+        };
+        document.getElementById('uploadBox2').onclick = function() {
+            document.getElementById('buktiBayar').click();
+        };
+
+        // Tampilkan nama file yang dipilih
+        document.getElementById('fileKerja').onchange = function() {
+            const f = this.files[0];
+            document.getElementById('fileName1').textContent = f ? '📎 ' + f.name : '';
+            document.getElementById('errFile1').style.display = 'none';
+        };
+        document.getElementById('buktiBayar').onchange = function() {
+            const f = this.files[0];
+            document.getElementById('fileName2').textContent = f ? '📎 ' + f.name : '';
+            document.getElementById('errFile2').style.display = 'none';
+        };
+
+        // Enable tombol submit saat checkbox final dicentang
+        document.getElementById('checkFinal').onchange = function() {
+            document.getElementById('btnSubmit').disabled = !this.checked;
+            document.getElementById('errFinal').style.display = this.checked ? 'none' : 'block';
+        };
+
+        // Pindah step
+        function goStep(step) {
+            if (step === 2 && !validStep1()) return;
+            if (step === 3 && !validStep2()) return;
+
+            currentStep = step;
+            document.querySelectorAll('.form-step').forEach(el => el.classList.remove('active'));
+            document.getElementById('step' + step).classList.add('active');
+            updateCircles(step);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Validasi step 1
+        function validStep1() {
+            const nama = document.getElementById('namaCust').value.trim();
+            const wa = document.getElementById('waCust').value.trim();
+            const jasa = document.getElementById('jasa').value;
+            const file = document.getElementById('fileKerja').files[0];
+
+            if (!nama) { alert('❌ Nama wajib diisi!'); return false; }
+            if (!wa || wa.replace(/[^0-9]/g, '').length < 10) { alert('❌ Nomor WhatsApp tidak valid (min. 10 digit)!'); return false; }
+            if (!jasa) { alert('❌ Pilih jenis layanan!'); return false; }
+            if (!file) { document.getElementById('errFile1').style.display = 'block'; return false; }
+            document.getElementById('errFile1').style.display = 'none';
+            return true;
+        }
+
+        // Validasi step 2
+        function validStep2() {
+            const bukti = document.getElementById('buktiBayar').files[0];
+            const check = document.getElementById('checkBayar').checked;
+
+            if (!bukti) { document.getElementById('errFile2').style.display = 'block'; return false; }
+            if (!check) { document.getElementById('errCheck').style.display = 'block'; return false; }
+            document.getElementById('errFile2').style.display = 'none';
+            document.getElementById('errCheck').style.display = 'none';
+            return true;
+        }
+
+        // Update step indicator
+        function updateCircles(active) {
+            for (let i = 1; i <= 3; i++) {
+                const c = document.getElementById('circle' + i);
+                c.classList.remove('active', 'done');
+                if (i < active) c.classList.add('done');
+                if (i === active) c.classList.add('active');
+            }
+            document.getElementById('line1').classList.toggle('done', active > 1);
+            document.getElementById('line2').classList.toggle('done', active > 2);
+        }
+
+        // Kirim WhatsApp ke admin
+        function keWA() {
+            const nama = document.getElementById('namaCust').value.trim() || 'Customer';
+            const jasa = document.getElementById('jasa').value || 'Cek Plagiasi';
+            const msg = `Halo kak Deny, saya *${nama}* sudah kirim pesanan *${jasa}* dan sudah transfer via QRIS. Mohon dicek ya. Terima kasih 🙏`;
+            window.open(`https://wa.me/${WA_ADMIN}?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+
+        // Reset form
+        function resetAll() {
+            document.getElementById('formOrder').reset();
+            document.getElementById('fileName1').textContent = '';
+            document.getElementById('fileName2').textContent = '';
+            document.getElementById('btnSubmit').disabled = true;
+            document.querySelectorAll('.error').forEach(e => e.style.display = 'none');
+            document.getElementById('successBox').style.display = 'none';
+            document.getElementById('mainContainer').style.display = 'block';
+            goStep(1);
+        }
+
+        // SUBMIT FORM
+        document.getElementById('formOrder').onsubmit = async function(e) {
+            e.preventDefault();
+
+            if (!document.getElementById('checkFinal').checked) {
+                document.getElementById('errFinal').style.display = 'block';
+                return;
+            }
+
+            document.getElementById('loading').style.display = 'flex';
+            document.getElementById('btnSubmit').disabled = true;
+
+            try {
+                const file1 = document.getElementById('fileKerja').files[0];
+                const file2 = document.getElementById('buktiBayar').files[0];
+
+                const b64_1 = await toBase64(file1);
+                const b64_2 = await toBase64(file2);
+
+                const payload = {
+                    nama: document.getElementById('namaCust').value.trim(),
+                    wa: document.getElementById('waCust').value.trim(),
+                    jasa: document.getElementById('jasa').value,
+                    catatan: document.getElementById('catatan').value.trim(),
+                    namaFile1: file1.name,
+                    file1: b64_1.split(',')[1],
+                    mime1: file1.type,
+                    namaFile2: file2.name,
+                    file2: b64_2.split(',')[1],
+                    mime2: file2.type,
+                    waktu: new Date().toLocaleString('id-ID')
+                };
+
+                const res = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(payload),
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                const hasil = await res.json();
+
+                if (hasil.status === 'success') {
+                    document.getElementById('mainContainer').style.display = 'none';
+                    document.getElementById('successBox').style.display = 'block';
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    // Otomatis buka WhatsApp setelah 2 detik
+                    setTimeout(keWA, 2000);
+                } else {
+                    alert('❌ Gagal mengirim: ' + (hasil.message || 'Coba lagi nanti'));
+                }
+            } catch (err) {
+                console.error(err);
+                alert('❌ Terjadi kesalahan jaringan. Silakan coba lagi.');
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('btnSubmit').disabled = false;
+            }
+        };
+
+        // Convert file ke base64
+        function toBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+            });
+        }
+    </script>
+</body>
+</html>
